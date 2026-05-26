@@ -1,0 +1,919 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finance Idle Game</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        background: #f4fbff;
+        color: #213547;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        padding: 14px;
+        min-height: 100vh;
+        background: radial-gradient(
+          circle at top,
+          #d2efff 0%,
+          #f4fbff 40%,
+          #ffffff 100%
+        );
+        overflow-x: hidden;
+      }
+
+      .app-shell {
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      header.hero {
+        text-align: center;
+        padding: 18px 14px 8px;
+        margin-bottom: 14px;
+      }
+
+      header.hero h1 {
+        margin: 0;
+        font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+        color: #1a5b9d;
+      }
+
+      header.hero p {
+        margin: 14px auto 0;
+        max-width: 720px;
+        color: #2f4f65;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+
+      .layout-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        align-items: start;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(45, 135, 255, 0.14);
+        border-radius: 20px;
+        box-shadow: 0 12px 34px rgba(39, 106, 180, 0.08);
+        padding: 14px;
+      }
+
+      .summary-card {
+        display: grid;
+        gap: 16px;
+        grid-column: 1 / -1;
+      }
+
+      .summary-card h2,
+      .panel h2 {
+        margin: 0 0 8px;
+        font-size: 1.25rem;
+        color: #1c6ac9;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 10px;
+      }
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 14px;
+        border-radius: 16px;
+        background: #eef7ff;
+        border: 1px solid #d4ebff;
+      }
+
+      .stat-item strong {
+        font-weight: 700;
+        color: #1c496d;
+      }
+
+      .stat-item span {
+        font-size: 1.15rem;
+        color: #0f2f54;
+      }
+
+      .actions,
+      .form-row,
+      .control-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .actions button,
+      .form-row button {
+        flex: 1 1 auto;
+      }
+
+      .form-row label {
+        min-width: 80px;
+        color: #365775;
+        font-weight: 600;
+      }
+
+      .panel p,
+      .control-row p {
+        margin: 6px 0;
+        color: #405775;
+      }
+
+      .control-row p {
+        flex: 1 1 55%;
+        margin: 0;
+      }
+
+      .panel button,
+      .panel input {
+        min-height: 44px;
+      }
+
+      .panel button {
+        background: linear-gradient(135deg, #ffd166 0%, #ffb347 100%);
+        border: 1px solid #f2a94b;
+        color: #2f2f2f;
+        border-radius: 14px;
+        padding: 0 16px;
+        font-weight: 700;
+        transition:
+          transform 0.16s ease,
+          filter 0.16s ease;
+      }
+
+      .panel button:hover:not(:disabled) {
+        filter: brightness(1.07);
+        transform: translateY(-1px);
+      }
+
+      .panel button:disabled {
+        background: #e0e6ef;
+        border-color: #c8d3e7;
+        color: #7a8392;
+        cursor: not-allowed;
+      }
+
+      .panel input {
+        border: 1px solid #90caf9;
+        border-radius: 12px;
+        padding: 10px 12px;
+        width: 110px;
+        background: #fbfdff;
+      }
+
+      .cards-grid {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: repeat(3, minmax(240px, 1fr));
+        gap: 16px;
+      }
+
+      .cards-grid .panel {
+        margin: 0;
+      }
+
+      .section-title {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .log-card ul {
+        list-style: none;
+        padding-left: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+        max-height: 280px;
+        overflow-y: auto;
+      }
+
+      .log-card li {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: #f1f8ff;
+        border: 1px solid #dce9f9;
+        color: #2d4a6d;
+      }
+
+      .summary-card .actions {
+        justify-content: flex-start;
+      }
+
+      @media (max-width: 960px) {
+        .layout-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        body {
+          padding: 14px;
+        }
+
+        .summary-card .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .actions,
+        .form-row,
+        .control-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .panel button,
+        .panel input {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <h1>Finance Idle Game</h1>
+        <p>
+          Objectif : devenir le plus riche possible en gérant tes revenus, tes
+          dépenses et tes investissements.
+        </p>
+      </header>
+
+      <main class="layout-grid">
+        <section class="panel summary-card">
+          <div class="section-title">
+            <h2>Tableau de bord</h2>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-item">
+              <strong>Argent disponible</strong>
+              <span id="money">0 €</span>
+            </div>
+            <div class="stat-item">
+              <strong>Valeur nette</strong>
+              <span id="netWorth">0 €</span>
+            </div>
+            <div class="stat-item">
+              <strong>Par clic</strong>
+              <span id="clickIncome">1 €</span>
+            </div>
+            <div class="stat-item">
+              <strong>Passif / sec</strong>
+              <span id="passiveIncome">0 €</span>
+            </div>
+            <div class="stat-item">
+              <strong>Dépenses / sec</strong>
+              <span id="expenses">0 €</span>
+            </div>
+            <div class="stat-item">
+              <strong>Prestige</strong>
+              <span id="prestigeMultiplier">x1</span>
+            </div>
+            <div class="stat-item" style="grid-column: span 2">
+              <strong>Jour</strong>
+              <span id="day">1</span>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="workButton">Travailler</button>
+            <button id="saveButton">Sauvegarder</button>
+            <button id="loadButton">Charger</button>
+            <button id="resetButton">Réinitialiser</button>
+          </div>
+        </section>
+
+        <div class="cards-grid">
+          <section class="panel">
+            <div class="section-title">
+              <h2>Carrière</h2>
+            </div>
+            <p>Améliore ton revenu actif.</p>
+            <div id="careerUpgrades"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Revenus passifs</h2>
+            </div>
+            <p>Achète des actifs qui génèrent de l'argent automatiquement.</p>
+            <div id="assets"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Qualité de vie</h2>
+            </div>
+            <p>
+              Ces achats coûtent cher à entretenir, mais augmentent ton prestige
+              et ta valeur nette.
+            </p>
+            <div id="lifestyle"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Banque</h2>
+            </div>
+            <div class="control-row">
+              <p>
+                <strong>Compte épargne :</strong> <span id="savings">0 €</span>
+              </p>
+              <p>
+                <strong>Taux d'intérêt :</strong>
+                <span id="interestRate">0.1 % / seconde</span>
+              </p>
+            </div>
+            <div class="form-row">
+              <label for="savingsAmount">Montant</label>
+              <input id="savingsAmount" type="number" min="0" value="100" />
+              <button id="depositButton">Déposer</button>
+              <button id="withdrawButton">Retirer</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Bourse</h2>
+            </div>
+            <div class="control-row">
+              <p>
+                <strong>Actions possédées :</strong>
+                <span id="stocksOwned">0</span>
+              </p>
+              <p>
+                <strong>Prix par action :</strong>
+                <span id="stockPrice">50 €</span>
+              </p>
+            </div>
+            <div class="form-row">
+              <label for="stockAmount">Quantité</label>
+              <input id="stockAmount" type="number" min="1" value="1" />
+              <button id="buyStockButton">Acheter</button>
+              <button id="sellStockButton">Vendre</button>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="section-title">
+              <h2>Prestige</h2>
+            </div>
+            <p>
+              Quand ta valeur nette dépasse 1 000 000 €, tu peux repartir de
+              zéro avec un multiplicateur permanent.
+            </p>
+            <button id="prestigeButton">Faire un prestige</button>
+          </section>
+
+          <section class="panel log-card">
+            <div class="section-title">
+              <h2>Journal</h2>
+            </div>
+            <ul id="log"></ul>
+          </section>
+        </div>
+      </main>
+
+      <script>
+        const game = {
+          money: 0,
+          savings: 0,
+          stocksOwned: 0,
+          stockPrice: 50,
+          day: 1,
+          prestigeMultiplier: 1,
+          careerLevel: 0,
+          assets: {},
+          lifestyle: {},
+        };
+
+        const careerUpgrades = [
+          { name: "Petit boulot", baseCost: 25, clickBonus: 1 },
+          { name: "Formation en ligne", baseCost: 150, clickBonus: 4 },
+          {
+            name: "Certification professionnelle",
+            baseCost: 1000,
+            clickBonus: 15,
+          },
+          { name: "Promotion", baseCost: 7500, clickBonus: 80 },
+          { name: "Business personnel", baseCost: 50000, clickBonus: 400 },
+        ];
+
+        const assets = [
+          { id: "book", name: "Livre numérique", baseCost: 50, income: 0.2 },
+          { id: "blog", name: "Blog monétisé", baseCost: 300, income: 1.5 },
+          { id: "app", name: "Application mobile", baseCost: 2000, income: 12 },
+          {
+            id: "rental",
+            name: "Studio en location",
+            baseCost: 20000,
+            income: 95,
+          },
+          {
+            id: "company",
+            name: "Petite entreprise",
+            baseCost: 150000,
+            income: 850,
+          },
+          {
+            id: "holding",
+            name: "Holding d'investissement",
+            baseCost: 1000000,
+            income: 7000,
+          },
+        ];
+
+        const lifestyle = [
+          {
+            id: "phone",
+            name: "Téléphone premium",
+            baseCost: 800,
+            expense: 0.1,
+            value: 600,
+          },
+          {
+            id: "car",
+            name: "Voiture",
+            baseCost: 15000,
+            expense: 4,
+            value: 10000,
+          },
+          {
+            id: "house",
+            name: "Maison",
+            baseCost: 250000,
+            expense: 35,
+            value: 220000,
+          },
+          {
+            id: "villa",
+            name: "Villa de luxe",
+            baseCost: 1500000,
+            expense: 250,
+            value: 1400000,
+          },
+        ];
+
+        function formatMoney(value) {
+          return Math.floor(value).toLocaleString("fr-FR") + " €";
+        }
+
+        function getCareerClickIncome() {
+          let income = 1;
+          for (let i = 0; i < game.careerLevel; i++) {
+            income += careerUpgrades[i].clickBonus;
+          }
+          return income * game.prestigeMultiplier;
+        }
+
+        function getPassiveIncome() {
+          let income = 0;
+          assets.forEach((asset) => {
+            income += (game.assets[asset.id] || 0) * asset.income;
+          });
+          return income * game.prestigeMultiplier;
+        }
+
+        function getExpenses() {
+          let expenses = 0;
+          lifestyle.forEach((item) => {
+            expenses += (game.lifestyle[item.id] || 0) * item.expense;
+          });
+          return expenses;
+        }
+
+        function getLifestyleValue() {
+          let value = 0;
+          lifestyle.forEach((item) => {
+            value += (game.lifestyle[item.id] || 0) * item.value;
+          });
+          return value;
+        }
+
+        function getStockValue() {
+          return game.stocksOwned * game.stockPrice;
+        }
+
+        function getNetWorth() {
+          return (
+            game.money + game.savings + getStockValue() + getLifestyleValue()
+          );
+        }
+
+        function getAssetCost(asset) {
+          const owned = game.assets[asset.id] || 0;
+          return Math.floor(asset.baseCost * Math.pow(1.18, owned));
+        }
+
+        function getLifestyleCost(item) {
+          const owned = game.lifestyle[item.id] || 0;
+          return Math.floor(item.baseCost * Math.pow(1.5, owned));
+        }
+
+        function addLog(message) {
+          const log = document.getElementById("log");
+          const item = document.createElement("li");
+          item.textContent = "Jour " + game.day + " : " + message;
+          log.prepend(item);
+
+          while (log.children.length > 15) {
+            log.removeChild(log.lastChild);
+          }
+        }
+
+        function renderCareer() {
+          const container = document.getElementById("careerUpgrades");
+          container.innerHTML = "";
+
+          careerUpgrades.forEach((upgrade, index) => {
+            const cost = Math.floor(upgrade.baseCost * Math.pow(2.2, index));
+            const unlocked = game.careerLevel > index;
+            const current = game.careerLevel === index;
+
+            const div = document.createElement("div");
+            const title = document.createElement("h3");
+            const description = document.createElement("p");
+            const button = document.createElement("button");
+
+            title.textContent = upgrade.name;
+            description.textContent =
+              "Bonus : +" +
+              formatMoney(upgrade.clickBonus) +
+              " par clic | Coût : " +
+              formatMoney(cost);
+            button.textContent = unlocked ? "Déjà acheté" : "Acheter";
+            button.disabled = unlocked || !current || game.money < cost;
+
+            button.addEventListener("click", () => {
+              if (game.money >= cost && game.careerLevel === index) {
+                game.money -= cost;
+                game.careerLevel++;
+                addLog(
+                  "Nouvelle amélioration de carrière : " + upgrade.name + ".",
+                );
+                render();
+              }
+            });
+
+            div.appendChild(title);
+            div.appendChild(description);
+            div.appendChild(button);
+            container.appendChild(div);
+          });
+        }
+
+        function renderAssets() {
+          const container = document.getElementById("assets");
+          container.innerHTML = "";
+
+          assets.forEach((asset) => {
+            const owned = game.assets[asset.id] || 0;
+            const cost = getAssetCost(asset);
+
+            const div = document.createElement("div");
+            const title = document.createElement("h3");
+            const description = document.createElement("p");
+            const button = document.createElement("button");
+
+            title.textContent = asset.name;
+            description.textContent =
+              "Possédé : " +
+              owned +
+              " | Revenu : " +
+              formatMoney(asset.income) +
+              "/sec chacun | Prix : " +
+              formatMoney(cost);
+            button.textContent = "Acheter";
+            button.disabled = game.money < cost;
+
+            button.addEventListener("click", () => {
+              if (game.money >= cost) {
+                game.money -= cost;
+                game.assets[asset.id] = owned + 1;
+                addLog("Achat d'un actif : " + asset.name + ".");
+                render();
+              }
+            });
+
+            div.appendChild(title);
+            div.appendChild(description);
+            div.appendChild(button);
+            container.appendChild(div);
+          });
+        }
+
+        function renderLifestyle() {
+          const container = document.getElementById("lifestyle");
+          container.innerHTML = "";
+
+          lifestyle.forEach((item) => {
+            const owned = game.lifestyle[item.id] || 0;
+            const cost = getLifestyleCost(item);
+
+            const div = document.createElement("div");
+            const title = document.createElement("h3");
+            const description = document.createElement("p");
+            const button = document.createElement("button");
+
+            title.textContent = item.name;
+            description.textContent =
+              "Possédé : " +
+              owned +
+              " | Valeur nette : +" +
+              formatMoney(item.value) +
+              " | Dépense : -" +
+              formatMoney(item.expense) +
+              "/sec | Prix : " +
+              formatMoney(cost);
+            button.textContent = "Acheter";
+            button.disabled = game.money < cost;
+
+            button.addEventListener("click", () => {
+              if (game.money >= cost) {
+                game.money -= cost;
+                game.lifestyle[item.id] = owned + 1;
+                addLog("Achat de qualité de vie : " + item.name + ".");
+                render();
+              }
+            });
+
+            div.appendChild(title);
+            div.appendChild(description);
+            div.appendChild(button);
+            container.appendChild(div);
+          });
+        }
+
+        function render() {
+          document.getElementById("money").textContent = formatMoney(
+            game.money,
+          );
+          document.getElementById("netWorth").textContent =
+            formatMoney(getNetWorth());
+          document.getElementById("clickIncome").textContent = formatMoney(
+            getCareerClickIncome(),
+          );
+          document.getElementById("passiveIncome").textContent =
+            formatMoney(getPassiveIncome());
+          document.getElementById("expenses").textContent =
+            formatMoney(getExpenses());
+          document.getElementById("prestigeMultiplier").textContent =
+            "x" + game.prestigeMultiplier.toFixed(2);
+          document.getElementById("day").textContent = game.day;
+          document.getElementById("savings").textContent = formatMoney(
+            game.savings,
+          );
+          document.getElementById("stocksOwned").textContent = game.stocksOwned;
+          document.getElementById("stockPrice").textContent = formatMoney(
+            game.stockPrice,
+          );
+
+          renderCareer();
+          renderAssets();
+          renderLifestyle();
+        }
+
+        function gameTick() {
+          const passiveIncome = getPassiveIncome();
+          const expenses = getExpenses();
+          const interest = game.savings * 0.001;
+
+          game.money += passiveIncome - expenses;
+          game.savings += interest;
+
+          if (game.money < 0) {
+            game.money = 0;
+            addLog(
+              "Tes dépenses ont absorbé tes liquidités. Attention au train de vie.",
+            );
+          }
+
+          render();
+        }
+
+        function marketTick() {
+          const variation = 1 + (Math.random() - 0.48) / 10;
+          game.stockPrice = Math.max(5, game.stockPrice * variation);
+
+          if (Math.random() < 0.08) {
+            randomEvent();
+          }
+
+          game.day++;
+          render();
+        }
+
+        function randomEvent() {
+          const events = [
+            () => {
+              const bonus = 100 + Math.random() * getNetWorth() * 0.02;
+              game.money += bonus;
+              addLog("Prime inattendue : +" + formatMoney(bonus) + ".");
+            },
+            () => {
+              const loss = Math.min(
+                game.money,
+                50 + Math.random() * getNetWorth() * 0.015,
+              );
+              game.money -= loss;
+              addLog("Dépense imprévue : -" + formatMoney(loss) + ".");
+            },
+            () => {
+              game.stockPrice *= 1.25;
+              addLog(
+                "Bonne nouvelle sur les marchés : les actions montent fortement.",
+              );
+            },
+            () => {
+              game.stockPrice = Math.max(5, game.stockPrice * 0.75);
+              addLog("Correction boursière : le prix des actions chute.");
+            },
+            () => {
+              const income = getPassiveIncome();
+              game.money += income * 10;
+              addLog("Tes actifs ont surperformé : bonus de revenus passifs.");
+            },
+          ];
+
+          const event = events[Math.floor(Math.random() * events.length)];
+          event();
+        }
+
+        document.getElementById("workButton").addEventListener("click", () => {
+          game.money += getCareerClickIncome();
+          render();
+        });
+
+        document
+          .getElementById("depositButton")
+          .addEventListener("click", () => {
+            const amount = Number(
+              document.getElementById("savingsAmount").value,
+            );
+            if (amount > 0 && game.money >= amount) {
+              game.money -= amount;
+              game.savings += amount;
+              addLog(
+                "Dépôt sur le compte épargne : " + formatMoney(amount) + ".",
+              );
+              render();
+            }
+          });
+
+        document
+          .getElementById("withdrawButton")
+          .addEventListener("click", () => {
+            const amount = Number(
+              document.getElementById("savingsAmount").value,
+            );
+            if (amount > 0 && game.savings >= amount) {
+              game.savings -= amount;
+              game.money += amount;
+              addLog(
+                "Retrait depuis le compte épargne : " +
+                  formatMoney(amount) +
+                  ".",
+              );
+              render();
+            }
+          });
+
+        document
+          .getElementById("buyStockButton")
+          .addEventListener("click", () => {
+            const amount = Math.floor(
+              Number(document.getElementById("stockAmount").value),
+            );
+            const cost = amount * game.stockPrice;
+
+            if (amount > 0 && game.money >= cost) {
+              game.money -= cost;
+              game.stocksOwned += amount;
+              addLog(
+                "Achat de " +
+                  amount +
+                  " action(s) pour " +
+                  formatMoney(cost) +
+                  ".",
+              );
+              render();
+            }
+          });
+
+        document
+          .getElementById("sellStockButton")
+          .addEventListener("click", () => {
+            const amount = Math.floor(
+              Number(document.getElementById("stockAmount").value),
+            );
+            const gain = amount * game.stockPrice;
+
+            if (amount > 0 && game.stocksOwned >= amount) {
+              game.stocksOwned -= amount;
+              game.money += gain;
+              addLog(
+                "Vente de " +
+                  amount +
+                  " action(s) pour " +
+                  formatMoney(gain) +
+                  ".",
+              );
+              render();
+            }
+          });
+
+        document
+          .getElementById("prestigeButton")
+          .addEventListener("click", () => {
+            const netWorth = getNetWorth();
+
+            if (netWorth >= 1000000) {
+              const bonus = Math.sqrt(netWorth / 1000000) * 0.25;
+              game.money = 0;
+              game.savings = 0;
+              game.stocksOwned = 0;
+              game.stockPrice = 50;
+              game.day = 1;
+              game.careerLevel = 0;
+              game.assets = {};
+              game.lifestyle = {};
+              game.prestigeMultiplier += bonus;
+              addLog(
+                "Prestige effectué. Nouveau multiplicateur permanent : x" +
+                  game.prestigeMultiplier.toFixed(2) +
+                  ".",
+              );
+              render();
+            } else {
+              addLog(
+                "Il faut au moins 1 000 000 € de valeur nette pour faire un prestige.",
+              );
+            }
+          });
+
+        document.getElementById("saveButton").addEventListener("click", () => {
+          localStorage.setItem("financeIdleGameSave", JSON.stringify(game));
+          addLog("Partie sauvegardée.");
+        });
+
+        document.getElementById("loadButton").addEventListener("click", () => {
+          const save = localStorage.getItem("financeIdleGameSave");
+          if (save) {
+            const data = JSON.parse(save);
+            Object.assign(game, data);
+            addLog("Partie chargée.");
+            render();
+          }
+        });
+
+        document.getElementById("resetButton").addEventListener("click", () => {
+          localStorage.removeItem("financeIdleGameSave");
+          game.money = 0;
+          game.savings = 0;
+          game.stocksOwned = 0;
+          game.stockPrice = 50;
+          game.day = 1;
+          game.prestigeMultiplier = 1;
+          game.careerLevel = 0;
+          game.assets = {};
+          game.lifestyle = {};
+          addLog("Nouvelle partie lancée.");
+          render();
+        });
+
+        render();
+        setInterval(gameTick, 1000);
+        setInterval(marketTick, 5000);
+      </script>
+    </div>
+  </body>
+</html>
