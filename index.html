@@ -781,8 +781,12 @@
         }
 
         function marketTick() {
+          // Variation aléatoire courte + dérive haussière lente sur le long terme
           const variation = 1 + (Math.random() - 0.48) / 10;
-          game.stockPrice = Math.max(5, game.stockPrice * variation);
+          // Drift positif par tick (réglable) — assure une tendance haussière long terme
+          const longTermDrift = 1 + 0.0005; // ≈ +0.05% par marketTick
+
+          game.stockPrice = Math.max(5, game.stockPrice * variation * longTermDrift);
 
           if (Math.random() < 0.08) {
             randomEvent();
