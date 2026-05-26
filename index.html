@@ -232,15 +232,46 @@
         .layout-grid {
           grid-template-columns: 1fr;
         }
+
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-card .stats-grid {
+          grid-template-columns: repeat(2, minmax(120px, 1fr));
+        }
+
+        .panel {
+          padding: 12px;
+        }
       }
 
       @media (max-width: 720px) {
         body {
-          padding: 14px;
+          padding: 12px;
+        }
+
+        header.hero h1 {
+          font-size: clamp(1.7rem, 8vw, 2.2rem);
+        }
+
+        header.hero p {
+          font-size: 0.95rem;
+          line-height: 1.5;
         }
 
         .summary-card .stats-grid {
           grid-template-columns: 1fr;
+        }
+
+        .cards-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .section-title {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 8px;
         }
 
         .actions,
@@ -250,9 +281,30 @@
           align-items: stretch;
         }
 
+        .panel {
+          padding: 12px;
+        }
+
         .panel button,
         .panel input {
           width: 100%;
+        }
+
+        .panel p,
+        .control-row p {
+          font-size: 0.95rem;
+        }
+
+        .stat-item {
+          padding: 12px;
+        }
+
+        .stat-item span {
+          font-size: 1rem;
+        }
+
+        .log-card ul {
+          max-height: 220px;
         }
       }
     </style>
