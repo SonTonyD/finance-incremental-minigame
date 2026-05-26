@@ -368,8 +368,6 @@
 
           <div class="actions">
             <button id="workButton">Travailler</button>
-            <button id="saveButton">Sauvegarder</button>
-            <button id="loadButton">Charger</button>
             <button id="resetButton">Réinitialiser</button>
           </div>
         </section>
@@ -942,39 +940,42 @@
             }
           });
 
-        document.getElementById("saveButton").addEventListener("click", () => {
+        function autoSave() {
           localStorage.setItem("financeIdleGameSave", JSON.stringify(game));
-          addLog("Partie sauvegardée.");
-        });
+        }
 
-        document.getElementById("loadButton").addEventListener("click", () => {
-          const save = localStorage.getItem("financeIdleGameSave");
-          if (save) {
-            const data = JSON.parse(save);
-            Object.assign(game, data);
-            addLog("Partie chargée.");
+        document.getElementById("resetButton").addEventListener("click", () => {
+          if (
+            confirm(
+              "Êtes-vous sûr de vouloir réinitialiser la partie ? Cette action est irréversible.",
+            )
+          ) {
+            localStorage.removeItem("financeIdleGameSave");
+            game.money = 0;
+            game.savings = 0;
+            game.stocksOwned = 0;
+            game.stockPrice = 50;
+            game.day = 1;
+            game.prestigeMultiplier = 1;
+            game.careerLevel = 0;
+            game.assets = {};
+            game.lifestyle = {};
+            addLog("Nouvelle partie lancée.");
             render();
           }
         });
 
-        document.getElementById("resetButton").addEventListener("click", () => {
-          localStorage.removeItem("financeIdleGameSave");
-          game.money = 0;
-          game.savings = 0;
-          game.stocksOwned = 0;
-          game.stockPrice = 50;
-          game.day = 1;
-          game.prestigeMultiplier = 1;
-          game.careerLevel = 0;
-          game.assets = {};
-          game.lifestyle = {};
-          addLog("Nouvelle partie lancée.");
-          render();
-        });
+        // Charger la sauvegarde au démarrage
+        const save = localStorage.getItem("financeIdleGameSave");
+        if (save) {
+          const data = JSON.parse(save);
+          Object.assign(game, data);
+        }
 
         render();
         setInterval(gameTick, 1000);
         setInterval(marketTick, 5000);
+        setInterval(autoSave, 10000); // Auto-save toutes les 10 secondes
 
         // Anti-zoom: bloquer seulement les gestes pinch-to-zoom
         document.addEventListener(
