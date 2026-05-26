@@ -826,6 +826,11 @@
               game.money += income * 10;
               addLog("Tes actifs ont surperformé : bonus de revenus passifs.");
             },
+            // Événement rare: multiplication x2.5 du prix de l'action
+            () => {
+              game.stockPrice *= 2.5;
+              addLog("Événement exceptionnel : les actions flambent x2.5 !");
+            },
           ];
 
           const event = events[Math.floor(Math.random() * events.length)];

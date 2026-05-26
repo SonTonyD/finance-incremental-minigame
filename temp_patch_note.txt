@@ -1,0 +1,1 @@
+Patch: add random event to multiply stockPrice by 2.5 in randomEvent function.
