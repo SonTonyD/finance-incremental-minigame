@@ -2,7 +2,10 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
     <title>Finance Idle Game</title>
     <style>
       :root {
@@ -25,6 +28,10 @@
       html,
       body {
         height: 100%;
+        touch-action: manipulation;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
       }
 
       body {
@@ -165,6 +172,7 @@
         transition:
           transform 0.16s ease,
           filter 0.16s ease;
+        touch-action: manipulation;
       }
 
       .panel button:hover:not(:disabled) {
@@ -185,6 +193,8 @@
         padding: 10px 12px;
         width: 110px;
         background: #fbfdff;
+        user-select: text;
+        -webkit-user-select: text;
       }
 
       .cards-grid {
