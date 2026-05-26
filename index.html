@@ -786,7 +786,10 @@
           // Drift positif par tick (réglable) — assure une tendance haussière long terme
           const longTermDrift = 1 + 0.0005; // ≈ +0.05% par marketTick
 
-          game.stockPrice = Math.max(5, game.stockPrice * variation * longTermDrift);
+          game.stockPrice = Math.max(
+            5,
+            game.stockPrice * variation * longTermDrift,
+          );
 
           if (Math.random() < 0.08) {
             randomEvent();
@@ -826,10 +829,15 @@
               game.money += income * 10;
               addLog("Tes actifs ont surperformé : bonus de revenus passifs.");
             },
-            // Événement rare: multiplication x2.5 du prix de l'action
+            // Événement rare: multiplication du prix de l'action basée sur le nombre de jours
             () => {
-              game.stockPrice *= 2.5;
-              addLog("Événement exceptionnel : les actions flambent x2.5 !");
+              const multiplier = 1 + game.day / 100;
+              game.stockPrice *= multiplier;
+              addLog(
+                "Événement exceptionnel : les actions flambent x" +
+                  multiplier.toFixed(2) +
+                  " !",
+              );
             },
           ];
 
